@@ -405,7 +405,6 @@
         fetch('preload.json')
           .then(res => res.json())
           .then(json => jsonEditor.setValue(JSON.stringify(json)))
-          .then(load())
       }
     </script>
     <div class='centered-content'>
