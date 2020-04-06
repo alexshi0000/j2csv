@@ -24,10 +24,10 @@
       }
       .footer {
         font-family: 'Montserrat', sans-serif;
-        font-size: 14px;
+        font-size: 15px;
         margin: 0px;
         margin-top: 40px;
-        padding: 10px;
+        padding: 12px;
         text-align: center;
       }
       .scrollable {
@@ -231,14 +231,22 @@
         return current
       }
 
+      var default_cntr = 1
       function loadIntoDB(obj, root) {
         if (Array.isArray(obj)) { //handle arrays add a default name for db
-          loadIntoDB({
-            "default_name": obj
-          }, '')
+          let name = "default_name_" + default_cntr
+          let loadedObj = {}
+          loadedObj[name] = obj
+          default_cntr++
+          if (!tableNames.includes(name)) {
+            loadIntoDB(loadedObj, root)
+          }
         }
         for (key in obj) {
           let name = root === '' ? key : root + '_' + key
+          if (!isNaN(name)) {
+            name = 'default_index_' + name
+          }
           if (!tableNames.includes(name)) { //dont want duplicates
             if (Array.isArray(obj[key])) {
               let arr = obj[key]
@@ -281,6 +289,8 @@
           } else {
             list = ''
             for (let k = 0; k < tableNames.length; k++) {
+              if (tableRows[k] === 0) //something went wrong
+                continue
               warn(list)
               list += '<div class="pill tiny" onclick="preloadQuery(' + k + ')">' + tableNames[k] +
                 ' &nbsp( rows: ' + tableRows[k] + ' )</div>'
@@ -339,7 +349,7 @@
       }
     </script>
   </head>
-  <body onload='tableTest()'>
+  <body onload='tableTest(); load_sample()'>
     <div class='centered-content'>
       <p class='title'>j2csv
         <span class='subtitle'>
@@ -348,12 +358,17 @@
           </a>
         </span>
       </p>
-      <p class='para'>j2csv is a tool that i build to leverages sqlite on the web with
+      <p class='para'>j2csv is a tool that i built to leverage sqlite on the web with
         <a style='color: inherit' href='https://github.com/sql-js/sql.js' target='_blank'>
           sql.js
         </a>
       </p>
       <p class='para'>with it,&nbsp you can create csv files from json datasets and also filter / preview useful information</p>
+      <p class='para'>here are some sample datasets:
+        <a style='color: inherit' href='https://pokeapi.co/api/v2/pokemon/1/' target='_blank'>pokemon</a>,
+        <a style='color: inherit' href='https://data.nasa.gov/resource/2vr3-k9wn.json' target='_blank'>nasa</a>,
+        <a style='color: inherit' href='http://jsonvat.com/' target='_blank'>eu vat rates</a>
+      </p>
       <div class='separator'></div>
       <p class='subtitle'>JSON</p>
     </div>
@@ -384,6 +399,13 @@
           return failed
         }
         return success
+      }
+
+      function load_sample() {
+        fetch('preload.json')
+          .then(res => res.json())
+          .then(json => jsonEditor.setValue(json))
+          .then(load())
       }
     </script>
     <div class='centered-content'>
