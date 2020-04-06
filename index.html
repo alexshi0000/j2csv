@@ -9,9 +9,10 @@
     <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/codemirror.min.css'>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/javascript/javascript.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/sql/sql.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/mathematica/mathematica.min.js'></script>
     <!-- FONT -->
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- STYLL -->
     <style>
       body {margin: 0px}
@@ -27,7 +28,7 @@
         font-size: 15px;
         margin: 0px;
         margin-top: 40px;
-        padding: 12px;
+        padding: 16px;
         text-align: center;
       }
       .scrollable {
@@ -46,6 +47,8 @@
         margin-left: 20%;
         border: 1px solid black;
         font-family: 'Inconsolata', monospace;
+        padding: 1px;
+        border-radius: 4px;
       }
       .gray {
         color: #88f;
@@ -68,6 +71,8 @@
         font-family: 'Montserrat', sans-serif;
         font-weight: 400;
         font-size: 18px;
+        margin-top: -4px;
+        margin-bottom: 16px;
       }
       .tiny {
         font-family: 'Montserrat', sans-serif;
@@ -85,10 +90,11 @@
         font-size: 18px;
         cursor: pointer;
         display: inline-block;
-        color: #666;
+        color: #111;
         outline: none;
       }
       .button:hover {
+        text-decoration: underline;
         color: #000;
       }
       .pill {
@@ -353,15 +359,15 @@
         </span>
       </p>
       <p class='para'>j2csv is a tool that i built to leverage sqlite on the web with
-        <a style='color: inherit' href='https://github.com/sql-js/sql.js' target='_blank'>
+        <a style='color: inherit; font-weight: 500' href='https://github.com/sql-js/sql.js' target='_blank'>
           sql.js
         </a>
       </p>
       <p class='para'>with it,&nbsp you can create csv files from json datasets and also filter / preview useful information</p>
       <p class='para'>here are some sample datasets:
-        <a style='color: inherit' href='https://pokeapi.co/api/v2/pokemon/1/' target='_blank'>pokemon</a>,
-        <a style='color: inherit' href='https://data.nasa.gov/resource/2vr3-k9wn.json' target='_blank'>nasa</a>,
-        <a style='color: inherit' href='http://jsonvat.com/' target='_blank'>eu vat rates</a>
+        <a style='color: inherit; font-weight: 500' href='https://pokeapi.co/api/v2/pokemon/1/' target='_blank'>pokemon</a>,
+        <a style='color: inherit; font-weight: 500' href='https://data.nasa.gov/resource/2vr3-k9wn.json' target='_blank'>nasa</a>,
+        <a style='color: inherit; font-weight: 500' href='http://jsonvat.com/' target='_blank'>eu vat rates</a>
       </p>
       <div class='separator'></div>
       <p class='subtitle'>JSON</p>
@@ -482,6 +488,7 @@
       var downloadable = null
       var csvEditor = CodeMirror.fromTextArea(document.getElementById('csv-editor'), {
         indentWithTabs: true,
+        mode: 'mathematica',
         tabSize: 4,
         indentUnit: 4,
         lineWrapping: true,
