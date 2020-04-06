@@ -232,6 +232,11 @@
       }
 
       function loadIntoDB(obj, root) {
+        if (Array.isArray(obj)) { //handle arrays add a default name for db
+          loadIntoDB({
+            "default_name": obj
+          }, '')
+        }
         for (key in obj) {
           let name = root === '' ? key : root + '_' + key
           if (!tableNames.includes(name)) { //dont want duplicates
