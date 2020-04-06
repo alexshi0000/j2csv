@@ -1,0 +1,511 @@
+<!doctype html>
+<html>
+  <head>
+    <title>j2csv</title>
+    <!-- SQL -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.2.2/dist/sql-asm.js'></script>
+    <!-- EDITOR -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/codemirror.min.js'></script>
+    <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/codemirror.min.css'>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/javascript/javascript.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.52.2/mode/sql/sql.min.js'></script>
+    <!-- FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <!-- STYLL -->
+    <style>
+      body {margin: 0px}
+      #plug {
+        text-decoration: none;
+        color: #88f;
+      }
+      #plug:hover {
+        color: #44f;
+      }
+      .footer {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        margin: 0px;
+        margin-top: 40px;
+        padding: 10px;
+        text-align: center;
+      }
+      .scrollable {
+        max-height: 500px;
+        overflow-y: scroll;
+      }
+      .CodeMirror {
+        height: 470px;
+      }
+      .separator {
+        height: 5px;
+      }
+      .code-container {
+        font-size: 17px;
+        width: 60%;
+        margin-left: 20%;
+        border: 1px solid black;
+        font-family: 'Inconsolata', monospace;
+      }
+      .gray {
+        color: #88f;
+      }
+      .centered-content {
+        width: 60%;
+        margin-left: 20%;
+      }
+      .title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 32px;
+      }
+      .subtitle {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+      }
+      .para {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 400;
+        font-size: 18px;
+      }
+      .tiny {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 70%;
+      }
+      .button {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 400;
+        border: none;
+        background-color: inherit;
+        margin-top: 15px;
+        padding: 0px;
+        font-size: 18px;
+        cursor: pointer;
+        display: inline-block;
+        color: #666;
+        outline: none;
+      }
+      .button:hover {
+        color: #000;
+      }
+      .pill {
+        background-color: #ddd;
+        border: none;
+        color: black;
+        padding: 15px 22px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 12px;
+        margin-right: 4px;
+        border-radius: 2px;
+        cursor: pointer;
+      }
+      table, td {
+        border: 1px solid black;
+        padding: 4px 16px;
+        border-collapse: collapse;
+        font-family: 'Inconsolata', monospace;
+        font-size: 18px;
+      }
+      th {
+        padding: 4px 16px;
+        border: 1px solid black;
+        background-color: #eee;
+      }
+    </style>
+    <script>
+      config = {
+        locateFile: filename => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.2.2/dist/sql-wasm.js'
+      }
+      // The `initSqlJs` function is globally provided by all of the main dist files if loaded in the browser.
+      // We must specify this locateFile function if we are loading a wasm file from anywhere other than the current html page's folder.
+      var db = null
+      var tableNames = []
+      var tableRows = []
+      var currentPreviewState = null
+
+      const success = 'success'
+      const failed = 'failed'
+
+      initSqlJs(config).then(function(SQL){
+        //Create the database
+        db = new SQL.Database();
+      });
+
+      function generateSQLlist(list) {
+        let ret = '('
+        try {
+          for (let i = 0; i < list.length; i++) {
+            let item = list[i]
+            ret += item + ''
+            if (i < list.length - 1) {
+              ret += ', '
+            }
+          }
+          ret += ')'
+        } catch (err) {
+          return failed
+        }
+        return ret
+      }
+
+      function log(msg) {
+        console.log('%c' + msg, 'color: #0ff')
+      }
+
+      function warn(msg) {
+        console.log('%c' + msg, 'color: #fa0')
+      }
+
+      function tableCreate(tableName, columns) {
+        try {
+          let cols = generateSQLlist(columns)
+          log('CREATE TABLE ' + tableName + ' ' + cols + ';')
+          db.run('CREATE TABLE ' + tableName + ' ' + cols + ';')
+        } catch (err) {
+          return failed
+        }
+        return success
+      }
+
+      function tableInsert(tableName, values) {
+        try {
+          let vals = generateSQLlist(values)
+          log('INSERT INTO ' + tableName + ' VALUES ' + vals + ';')
+          db.run('INSERT INTO ' + tableName + ' VALUES ' + vals + ';')
+        } catch (err) {
+          return failed
+        }
+        return success
+      }
+
+      function tableSelect(query) {
+        try {
+          let cols = []
+          let ret = []
+          log(query)
+          res = db.prepare(query)
+          // get the 2d array
+          let i = 0
+          while (res.step()) {
+            let row = res.getAsObject()
+            let rowBuilder = []
+            if (i == 0) {
+              for (key in row) {
+                cols.push(key)
+              }
+              ret.push(cols)
+            }
+            for (let j = 0; j < cols.length; j++) {
+              let key = cols[j]
+              let item = row[key]
+              rowBuilder.push(item)
+            }
+            ret.push(rowBuilder)
+            i++
+          }
+          return ret
+        } catch (err) {
+          return failed
+        }
+        return success
+      }
+
+      function flatten (obj, prefix, current) {
+        prefix = prefix || []
+        current = current || {}
+
+        // Remember kids, null is also an object!
+        if (typeof (obj) === 'object' && obj !== null) {
+          Object.keys(obj).forEach(key => {
+            this.flatten(obj[key], prefix.concat(key), current)
+          })
+        } else {
+          current[prefix.join('_')] = obj
+        }
+
+        return current
+      }
+
+      function loadIntoDB(obj, root) {
+        for (key in obj) {
+          let name = root === '' ? key : root + '_' + key
+          if (!tableNames.includes(name)) { //dont want duplicates
+            if (Array.isArray(obj[key])) {
+              let arr = obj[key]
+              try {
+                let cols = []
+                for (let i = 0; i < arr.length; i++) {
+                  let item = flatten(arr[i])
+                  if (i == 0) {
+                    for (arrkey in item) {
+                      cols.push(arrkey)
+                    }
+                    tableCreate(name, cols)
+                  }
+                  row = []
+                  for (let j = 0; j < cols.length; j++) {
+                    row.push( //push to db with double qoutes
+                      !isNaN(item[cols[j]]) ? item[cols[j]] : '"' + item[cols[j]] + '"'
+                    )
+                  }
+                  let success = tableInsert(name, row)
+                }
+                tableNames.push(name)
+                tableRows.push(arr.length)
+              } catch (err) {
+                console.log(err)
+              }
+            } else if (typeof obj[key] === 'object') {
+              loadIntoDB(obj[key], name)
+            }
+          }
+        }
+      }
+
+      function getTableList() {
+        try {
+          tableList = document.getElementById('table-list')
+          console.log(tableList)
+          if (tableNames.length === 0 && tableRows.length === 0) {
+            tableList.innerHTML = '<div class="pill tiny">no tables found</div>'
+          } else {
+            list = ''
+            for (let k = 0; k < tableNames.length; k++) {
+              warn(list)
+              list += '<div class="pill tiny" onclick="preloadQuery(' + k + ')">' + tableNames[k] +
+                ' &nbsp( rows: ' + tableRows[k] + ' )</div>'
+            }
+            tableList.innerHTML = list
+          }
+        } catch (err) {
+          console.log(err)
+        }
+      }
+
+      function generatePreviewable(csv_rows) {
+        if (csv_rows.length > 1) {
+          console.log('generating preview')
+          let marked = '<tr>'
+          for (let i = 0; i < csv_rows[0].length; i++) {
+            marked += '<th>'+csv_rows[0][i]+'</th>'
+          }
+          marked += '</tr>'
+          if (csv_rows.length > 0) {
+            for (let i = 1; i < csv_rows.length; i++) {
+              marked += '<tr>'
+              for (let j = 0; j < csv_rows[i].length; j++) {
+                marked += '<td>'+csv_rows[i][j]+'</td>'
+              }
+              marked += '</tr>'
+            }
+          }
+          console.log(marked)
+          document.getElementById('preview-table').style.display = ''
+          document.getElementById('preview-table').innerHTML = marked
+        } else {
+          document.getElementById('preview-table').style.display = 'none'
+        }
+      }
+
+      function tableTest() {
+        warn('TEST #1')
+        // Run a query without reading the results
+        tableCreate('test', ['col1', 'col2'])
+        // Insert two rows: (1,111) and (2,222)
+        tableInsert('test', [111111, 222222])
+        tableInsert('test', [11111, 22222])
+        tableInsert('test', [1111, 2222])
+        // Prepare a statement
+        let arr1 = tableSelect('SELECT * FROM test');
+        console.log(arr1)
+
+        warn('TEST #2')
+        tableCreate('test_two', ['c1', 'c2', 'c3'])
+        tableInsert('test_two', [1, null, "1"])
+        tableInsert('test_two', [2, null, "2"])
+        tableInsert('test_two', [3, null, "3"])
+        let arr2 = tableSelect('SELECT * FROM test_two')
+        console.log(arr2)
+      }
+    </script>
+  </head>
+  <body onload='tableTest()'>
+    <div class='centered-content'>
+      <p class='title'>j2csv
+        <span class='subtitle'>
+          <a id='plug' target='_blank' href='https://alexshi.me/home.html'>
+            by alex shi
+          </a>
+        </span>
+      </p>
+      <p class='para'>j2csv is a tool that i build to leverages sqlite on the web with
+        <a style='color: inherit' href='https://github.com/sql-js/sql.js' target='_blank'>
+          sql.js
+        </a>
+      </p>
+      <p class='para'>with it,&nbsp you can create csv files from json datasets and also filter / preview useful information</p>
+      <div class='separator'></div>
+      <p class='subtitle'>JSON</p>
+    </div>
+    <div class='code-container'>
+      <textarea id='json-editor'></textarea>
+    </div>
+    <script>
+      var jsonEditor = CodeMirror.fromTextArea(document.getElementById('json-editor'), {
+        lineNumbers: true,
+        mode: 'javascript',
+        indentWithTabs: true,
+        tabSize: 4,
+        smartIndent: true,
+        indentUnit: 4,
+        lineWrapping: true,
+      })
+
+      function load() {
+        try {
+          var ugly = jsonEditor.getValue()
+          var obj = JSON.parse(ugly);
+          var pretty = JSON.stringify(obj, undefined, 2);
+          jsonEditor.setValue(pretty);
+          loadIntoDB(obj, '')
+          getTableList()
+        } catch (err) {
+          alert('JSON is not valid')
+          return failed
+        }
+        return success
+      }
+    </script>
+    <div class='centered-content'>
+      <button type='button' class='button' onclick='load()'>validate and load json </button>
+      <div class='separator'></div>
+      <div class='separator'></div>
+
+      <p class='subtitle'>TABLES</p>
+      <div id='table-list'>
+        <div class='pill tiny'>no tables found</div>
+      </div>
+      <div class='separator'></div>
+
+      <p class='subtitle' id='preview-title'>PREVIEW</p>
+      <div class='scrollable'>
+        <table id='preview-table'>
+          <p class='para' id='empty-tag'>EMPTY TABLE.</p>
+        </table>
+      </div>
+      <div class='separator'></div>
+
+      <p class='subtitle'>QUERY</p>
+    </div>
+    <div class='code-container'>
+      <textarea id='sql-editor'></textarea>
+    </div>
+    <script>
+      var sqlEditor = CodeMirror.fromTextArea(document.getElementById('sql-editor'), {
+        lineNumbers: true,
+        mode: 'sql',
+        indentWithTabs: true,
+        tabSize: 4,
+        indentUnit: 4,
+        lineWrapping: true,
+      })
+      sqlEditor.setSize(null,90)
+
+      function query() {
+        try {
+          var query = sqlEditor.getValue()
+          console.log(query)
+          var csv_rows = tableSelect(query)
+          console.table(csv_rows)
+          if (csv_rows !== failed) {
+            generatePreviewable(csv_rows)
+            currentPreviewState = csv_rows // add this to the current preview state
+            csvPreview()
+            //add the numbers to title
+            previewTitle = document.getElementById('preview-title')
+            empty = document.getElementById('empty-tag')
+            if (csv_rows.length > 1) {
+              previewTitle.innerHTML = 'PREVIEW ( ' + (csv_rows.length - 1) + ' )'
+              empty.style.display = 'none'
+            } else {
+              previewTitle.innerHTML = 'PREVIEW'
+              empty.style.display = ''
+            }
+          } else {
+            throw 'invalid sql'
+          }
+        } catch (err) {
+          alert('SQL is not valid')
+        }
+      }
+
+      function preloadQuery(tableButton) {
+        tableVal = tableNames[tableButton]
+        sqlEditor.setValue('SELECT * FROM '+tableVal)
+        query()
+      }
+    </script>
+    <div class='centered-content'>
+      <button type='button' class='button' onclick='query()'>run sql query</button>
+      <div class='separator'></div>
+      <div class='separator'></div>
+      <p class='subtitle'>CSV</p>
+    </div>
+    <div class='code-container'>
+      <textarea id='csv-editor'></textarea>
+    </div>
+    <script>
+      var downloadable = null
+      var csvEditor = CodeMirror.fromTextArea(document.getElementById('csv-editor'), {
+        indentWithTabs: true,
+        tabSize: 4,
+        indentUnit: 4,
+        lineWrapping: true,
+      })
+      csvEditor.setSize(null,250)
+
+      function csvPreview() {
+        let csvContent = "data:text/csv;charset=utf-8,";
+        let preview = ''
+        currentPreviewState.forEach(function(rowArray) {
+          let row = rowArray.join(",");
+          csvContent += row + "\r\n";
+          preview += row + "\r\n";
+        });
+        downloadable = csvContent
+        csvEditor.setValue(preview)
+      }
+
+      function download() {
+        try {
+          csv = downloadable
+          if (csv === null)
+            throw 'no stupid csv file'
+          var element = document.createElement('a');
+          element.setAttribute('href', csv);
+          element.setAttribute('download', 'data.csv');
+
+          element.style.display = 'none';
+          document.body.appendChild(element);
+
+          element.click();
+
+          document.body.removeChild(element);
+        } catch (err) {
+          alert('Download failed')
+        }
+      }
+    </script>
+    <div class='centered-content'>
+      <button type='button' class='button' onclick='download()'>download csv file</button>
+    </div>
+    <div>
+      <p class='footer'>© 2020 all rights reserved.</p>
+    </div>
+  </body>
+</html>
