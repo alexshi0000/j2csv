@@ -283,7 +283,6 @@
       function getTableList() {
         try {
           tableList = document.getElementById('table-list')
-          console.log(tableList)
           if (tableNames.length === 0 && tableRows.length === 0) {
             tableList.innerHTML = '<div class="pill tiny">no tables found</div>'
           } else {
@@ -291,7 +290,6 @@
             for (let k = 0; k < tableNames.length; k++) {
               if (tableRows[k] === 0) //something went wrong
                 continue
-              warn(list)
               list += '<div class="pill tiny" onclick="preloadQuery(' + k + ')">' + tableNames[k] +
                 ' &nbsp( rows: ' + tableRows[k] + ' )</div>'
             }
@@ -304,7 +302,6 @@
 
       function generatePreviewable(csv_rows) {
         if (csv_rows.length > 1) {
-          console.log('generating preview')
           let marked = '<tr>'
           for (let i = 0; i < csv_rows[0].length; i++) {
             marked += '<th>'+csv_rows[0][i]+'</th>'
@@ -319,7 +316,6 @@
               marked += '</tr>'
             }
           }
-          console.log(marked)
           document.getElementById('preview-table').style.display = ''
           document.getElementById('preview-table').innerHTML = marked
         } else {
@@ -337,7 +333,6 @@
         tableInsert('test', [1111, 2222])
         // Prepare a statement
         let arr1 = tableSelect('SELECT * FROM test');
-        console.log(arr1)
 
         warn('TEST #2')
         tableCreate('test_two', ['c1', 'c2', 'c3'])
@@ -345,7 +340,6 @@
         tableInsert('test_two', [2, null, "2"])
         tableInsert('test_two', [3, null, "3"])
         let arr2 = tableSelect('SELECT * FROM test_two')
-        console.log(arr2)
       }
     </script>
   </head>
@@ -445,7 +439,6 @@
       function query() {
         try {
           var query = sqlEditor.getValue()
-          console.log(query)
           var csv_rows = tableSelect(query)
           console.table(csv_rows)
           if (csv_rows !== failed) {
