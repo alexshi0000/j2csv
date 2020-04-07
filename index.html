@@ -60,7 +60,7 @@
       }
       .scrollable {
         max-height: 500px;
-        overflow-y: scroll;
+        overflow: auto;
       }
       .CodeMirror {
         height: 470px;
@@ -374,6 +374,17 @@
         }
       }
 
+      function hidePreviewable() {
+        let previewTable = document.getElementById('preview-table')
+        previewTable.style.display = 'none'
+      }
+
+      function showPreviewable(marked) {
+        let previewTable = document.getElementById('preview-table')
+        previewTable.style.display = ''
+        previewTable.innerHTML = marked
+      }
+
       function generatePreviewable(csv_rows) {
         if (csv_rows.length > 1) {
           let marked = '<tr>'
@@ -390,10 +401,9 @@
               marked += '</tr>'
             }
           }
-          document.getElementById('preview-table').style.display = ''
-          document.getElementById('preview-table').innerHTML = marked
+          showPreviewable(marked)
         } else {
-          document.getElementById('preview-table').style.display = 'none'
+          hidePreviewable()
         }
       }
 
@@ -524,7 +534,7 @@
       <div class='separator'></div>
 
       <p class='subtitle' id='preview-title'>PREVIEW</p>
-      <div class='scrollable disable-scrollbars' style='padding-top: 4px'>
+      <div id='preview-table-wrapper' class='scrollable' style='padding-top: 4px'>
         <table id='preview-table'>
           <p class='para' id='empty-tag'>Empty table</p>
         </table>
