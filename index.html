@@ -17,13 +17,30 @@
     <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js'></script>
     <!-- STYLL -->
     <style>
-      body {margin: 0px}
+      body {margin: 0px; padding: 0px}
       #plug {
         text-decoration: none;
         color: #88f;
       }
       #plug:hover {
         color: #44f;
+      }
+      #sizeChanger {
+        height: 30px;
+        width: auto;
+        position: sticky;
+        position: -webkit-sticky;
+        float: right;
+        top: 40px;
+        margin-right: 40px;
+        transition: transform .2s;
+        cursor: pointer;
+      }
+      .shrink {
+        transform: scale(1.1);
+      }
+      .expand {
+        transform: scale(0.9);
       }
       .footer {
         font-family: 'Montserrat', sans-serif;
@@ -43,10 +60,17 @@
       .separator {
         padding: 5px;
       }
+      .small {
+        width: 54%;
+        margin-left: 23%;
+      }
+      .large {
+        width: 86%;
+        margin-left: 7%;
+      }
       .code-container {
+        transition: width .5s, margin-left .5s;
         font-size: 17px;
-        width: 60%;
-        margin-left: 20%;
         border: 1px solid black;
         font-family: 'Inconsolata', monospace;
         padding: 1px;
@@ -56,8 +80,7 @@
         color: #88f;
       }
       .centered-content {
-        width: 60%;
-        margin-left: 20%;
+        transition: width .5s, margin-left .5s;
       }
       .title {
         padding-top: 12px;
@@ -122,7 +145,7 @@
         font-size: 18px;
       }
       th {
-        padding: 4px 16px;
+        padding: 6px 16px;
         border: 1px solid black;
         background-color: #eee;
       }
@@ -387,7 +410,40 @@
     </script>
   </head>
   <body onload='tableTest(); load_sample()'>
-    <div class='centered-content'>
+    <img id='sizeChanger' class='expand' onclick='toggleSizeState()' src='fullscreen.png'>
+    <script>
+      var isSmallState = true
+      function toggleSizeState() {
+        let containers = _.flattenDeep([document.querySelectorAll('.code-container'),
+                                    document.querySelectorAll('.centered-content')])
+
+        if (isSmallState) {
+          document.getElementById('sizeChanger').classList.remove('expand')
+          document.getElementById('sizeChanger').classList.add('shrink')
+          containers.forEach((cont) => {
+            cont.forEach((c) => {
+              if (c.classList.contains('small')) {
+                c.classList.remove('small')
+                c.classList.add('large')
+              }
+            })
+          })
+        } else {
+          document.getElementById('sizeChanger').classList.remove('shrink')
+          document.getElementById('sizeChanger').classList.add('expand')
+          containers.forEach((cont) => {
+            cont.forEach((c) => {
+              if (c.classList.contains('large')) {
+                c.classList.remove('large')
+                c.classList.add('small')
+              }
+            })
+          })
+        }
+        isSmallState = !isSmallState
+      }
+    </script>
+    <div class='centered-content small'>
       <p class='title'>j2csv
         <span class='subtitle'>
           <a id='plug' target='_blank' href='https://alexshi.me/home.html'>
@@ -413,7 +469,7 @@
       <div class='separator' style='padding: 1px'></div>
       <p class='subtitle'>JSON</p>
     </div>
-    <div class='code-container'>
+    <div class='code-container small'>
       <textarea id='json-editor'></textarea>
     </div>
     <script>
@@ -448,7 +504,7 @@
           .then(json => jsonEditor.setValue(JSON.stringify(json)))
       }
     </script>
-    <div class='centered-content'>
+    <div class='centered-content small'>
       <button type='button' class='button' onclick='load()'>validate and load json </button>
       <div class='separator'></div>
       <div class='separator'></div>
@@ -469,7 +525,7 @@
       <div class='separator'></div>
       <p class='subtitle'>QUERY</p>
     </div>
-    <div class='code-container'>
+    <div class='code-container small'>
       <textarea id='sql-editor'></textarea>
     </div>
     <script>
@@ -531,7 +587,7 @@
         query()
       }
     </script>
-    <div class='centered-content'>
+    <div class='centered-content small'>
       <button type='button' class='button' onclick='query()'>run sql query</button>
       <button type='button' class='button' onclick='tableDropAll()' style='float: left'>drop tables</button>
       <div class='separator'></div>
@@ -540,7 +596,7 @@
       <div class='separator'></div>
       <p class='subtitle'>CSV</p>
     </div>
-    <div class='code-container'>
+    <div class='code-container small'>
       <textarea id='csv-editor'></textarea>
     </div>
     <script>
@@ -586,7 +642,7 @@
         }
       }
     </script>
-    <div class='centered-content'>
+    <div class='centered-content small'>
       <button type='button' class='button' onclick='download()'>download csv file</button>
     </div>
     <div>
