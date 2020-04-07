@@ -13,6 +13,8 @@
     <!-- FONT -->
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- LODASH -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js'></script>
     <!-- STYLL -->
     <style>
       body {margin: 0px}
@@ -237,8 +239,17 @@
               console.log(err)
             }
           }
-          tableNames.length = 0
-          tableRows.length = 0 //clear both arrays
+          // tableNames.length = 0
+          // tableRows.length = 0 //clear both arrays
+          //lodash
+          console.log('before lodash')
+          warn(tableNames.length)
+          warn(tableRows.length)
+          tableNames = _.drop(tableNames, n = tableNames.length)
+          tableRows = _.drop(tableRows, n = tableRows.length)
+          console.log('after lodash')
+          warn(tableNames.length)
+          warn(tableRows.length)
           getTableList()
           resetView()
           sqlEditorClear()
