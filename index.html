@@ -27,7 +27,7 @@
         font-family: 'Montserrat', sans-serif;
         font-size: 15px;
         margin: 0px;
-        margin-top: 40px;
+        margin-top: 80px;
         padding: 16px;
         text-align: center;
       }
@@ -39,7 +39,7 @@
         height: 470px;
       }
       .separator {
-        height: 5px;
+        padding: 5px;
       }
       .code-container {
         font-size: 17px;
@@ -58,6 +58,7 @@
         margin-left: 20%;
       }
       .title {
+        padding-top: 12px;
         font-family: 'Montserrat', sans-serif;
         font-weight: 600;
         font-size: 32px;
@@ -83,19 +84,19 @@
       }
       .button {
         font-family: 'Montserrat', sans-serif;
-        font-weight: 400;
+        font-weight: 500;
         border: none;
         background-color: inherit;
-        margin-top: 15px;
+        margin-top: 12px;
         padding: 0px;
         font-size: 18px;
         cursor: pointer;
         display: inline-block;
-        color: #111;
+        color: #666;
         outline: none;
+        float: right;
       }
       .button:hover {
-        text-decoration: underline;
         color: #000;
       }
       .pill {
@@ -195,6 +196,10 @@
           let cols = []
           let ret = []
           log(query)
+          if (query.includes('insert') || query.includes('INSERT') ||
+              query.includes('drop') || query.includes('DROP')) {
+            throw 'User is not allowed to insert or drop tables'
+          }
           res = db.prepare(query)
           // get the 2d array
           let i = 0
@@ -220,6 +225,26 @@
           return failed
         }
         return success
+      }
+
+      function tableDropAll() {
+        if (tableNames.length > 0) {
+          for (let i = 0; i < tableNames.length; i++) {
+            try {
+              log('DROP TABLE '+tableNames[i])
+              db.run('DROP TABLE '+tableNames[i])
+            } catch (err) {
+              console.log(err)
+            }
+          }
+          tableNames.length = 0
+          tableRows.length = 0 //clear both arrays
+          getTableList()
+          resetView()
+          sqlEditorClear()
+        } else {
+          alert('No tables')
+        }
       }
 
       function flatten (obj, prefix, current) {
@@ -364,7 +389,7 @@
           sql.js
         </a>
         &nbspand
-        <a style='color: inherit; font-weight: 500' href='https://github.com/sql-js/sql.js' target='_blank'>
+        <a style='color: inherit; font-weight: 500' href='https://lodash.com/' target='_blank'>
           lodash
         </a>
       </p>
@@ -374,7 +399,7 @@
         <a style='color: inherit; font-weight: 500' href='https://data.nasa.gov/resource/2vr3-k9wn.json' target='_blank'>nasa</a>,
         <a style='color: inherit; font-weight: 500' href='http://jsonvat.com/' target='_blank'>eu-vat-rates</a>
       </p>
-      <div class='separator'></div>
+      <div class='separator' style='padding: 1px'></div>
       <p class='subtitle'>JSON</p>
     </div>
     <div class='code-container'>
@@ -426,11 +451,11 @@
       <p class='subtitle' id='preview-title'>PREVIEW</p>
       <div class='scrollable' style='padding-top: 4px'>
         <table id='preview-table'>
-          <p class='para' id='empty-tag'>EMPTY TABLE.</p>
+          <p class='para' id='empty-tag'>Empty table</p>
         </table>
       </div>
       <div class='separator'></div>
-
+      <div class='separator'></div>
       <p class='subtitle'>QUERY</p>
     </div>
     <div class='code-container'>
@@ -445,13 +470,28 @@
         indentUnit: 4,
         lineWrapping: true,
       })
-      sqlEditor.setSize(null,90)
+      sqlEditor.setSize(null,106)
+
+      function sqlEditorClear() {
+        sqlEditor.setValue('')
+      }
+
+      function resetView() {
+        generatePreviewable([])
+        currentPreviewState = [] //previewable state is null
+        csvPreview() //now call csv preview again to update based on this state
+        //remove numbers
+        previewTitle = document.getElementById('preview-title')
+        empty = document.getElementById('empty-tag')
+        previewTitle.innerHTML = 'PREVIEW'
+        empty.style.display = ''
+      }
 
       function query() {
         try {
           var query = sqlEditor.getValue()
           var csv_rows = tableSelect(query)
-          console.table(csv_rows)
+          // console.table(csv_rows)
           if (csv_rows !== failed) {
             generatePreviewable(csv_rows)
             currentPreviewState = csv_rows // add this to the current preview state
@@ -482,6 +522,9 @@
     </script>
     <div class='centered-content'>
       <button type='button' class='button' onclick='query()'>run sql query</button>
+      <button type='button' class='button' onclick='tableDropAll()' style='float: left'>drop tables</button>
+      <div class='separator'></div>
+      <div class='separator'></div>
       <div class='separator'></div>
       <div class='separator'></div>
       <p class='subtitle'>CSV</p>
