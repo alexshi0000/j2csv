@@ -36,6 +36,14 @@
         transition: transform .2s;
         cursor: pointer;
       }
+      .disable-scrollbars::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+      }
+      .disable-scrollbars {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
       .shrink {
         transform: scale(1.1);
       }
@@ -516,7 +524,7 @@
       <div class='separator'></div>
 
       <p class='subtitle' id='preview-title'>PREVIEW</p>
-      <div class='scrollable' style='padding-top: 4px'>
+      <div class='scrollable disable-scrollbars' style='padding-top: 4px'>
         <table id='preview-table'>
           <p class='para' id='empty-tag'>Empty table</p>
         </table>
