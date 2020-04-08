@@ -1,3 +1,19 @@
+config = {
+	locateFile: filename => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.2.2/dist/sql-wasm.js'
+}
+
+var db = null
+var tableNames = []
+var tableRows = []
+var currentPreviewState = null
+
+const success = 'success'
+const failed = 'failed'
+
+initSqlJs(config).then(function(SQL){
+	db = new SQL.Database();
+});
+
 function generateSQLlist(list) {
 	let ret = '('
 	try {
@@ -91,15 +107,10 @@ function tableDropAll() {
 				console.log(err)
 			}
 		}
-		// tableNames.length = 0
-		// tableRows.length = 0 //clear both arrays
-		//lodash
-		console.log('before lodash')
 		warn(tableNames.length)
 		warn(tableRows.length)
 		tableNames = _.drop(tableNames, n = tableNames.length)
 		tableRows = _.drop(tableRows, n = tableRows.length)
-		console.log('after lodash')
 		warn(tableNames.length)
 		warn(tableRows.length)
 		getTableList()
