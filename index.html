@@ -18,44 +18,13 @@
     <!-- STYLL -->
     <link href="./index.css" rel='stylesheet'>
     <!-- JS -->
-    <script src='./db-func.js'></script>
-    <script src='./data-loader.js'></script>
-    <script src='./test.js'></script>
+    <script src='./js/db-func.js'></script>
+    <script src='./js/data-loader.js'></script>
+    <script src='./js/test.js'></script>
+    <script src='./js/utils.js'></script>
   </head>
-  <body onload='tableTest(); load_sample()'>
+  <body onload='load_sample()'>
     <img id='sizeChanger' class='expand' onclick='toggleSizeState()' src='fullscreen.png'>
-    <script>
-      var isSmallState = true
-      function toggleSizeState() {
-        let containers = _.flattenDeep([document.querySelectorAll('.code-container'),
-                                    document.querySelectorAll('.centered-content')])
-
-        if (isSmallState) {
-          document.getElementById('sizeChanger').classList.remove('expand')
-          document.getElementById('sizeChanger').classList.add('shrink')
-          containers.forEach((cont) => {
-            cont.forEach((c) => {
-              if (c.classList.contains('small')) {
-                c.classList.remove('small')
-                c.classList.add('large')
-              }
-            })
-          })
-        } else {
-          document.getElementById('sizeChanger').classList.remove('shrink')
-          document.getElementById('sizeChanger').classList.add('expand')
-          containers.forEach((cont) => {
-            cont.forEach((c) => {
-              if (c.classList.contains('large')) {
-                c.classList.remove('large')
-                c.classList.add('small')
-              }
-            })
-          })
-        }
-        isSmallState = !isSmallState
-      }
-    </script>
     <div class='centered-content small'>
       <p class='title'>j2csv
         <span class='subtitle'>
@@ -95,7 +64,6 @@
         indentUnit: 4,
         lineWrapping: true,
       })
-
       function load() {
         try {
           var ugly = jsonEditor.getValue()
@@ -110,7 +78,6 @@
         }
         return success
       }
-
       function load_sample() {
         fetch('preload.json')
           .then(res => res.json())
@@ -151,11 +118,9 @@
         lineWrapping: true,
       })
       sqlEditor.setSize(null,106)
-
       function sqlEditorClear() {
         sqlEditor.setValue('')
       }
-
       function resetView() {
         generatePreviewable([])
         currentPreviewState = [] //previewable state is null
@@ -166,7 +131,6 @@
         previewTitle.innerHTML = 'PREVIEW'
         empty.style.display = ''
       }
-
       function query() {
         try {
           var query = sqlEditor.getValue()
@@ -193,10 +157,9 @@
           alert('SQL is not valid')
         }
       }
-
       function preloadQuery(tableButton) {
         tableVal = tableNames[tableButton]
-        sqlEditor.setValue('SELECT * FROM '+tableVal)
+        sqlEditor.setValue('SELECT *\nFROM '+tableVal)
         query()
       }
     </script>
@@ -213,7 +176,6 @@
       <textarea id='csv-editor'></textarea>
     </div>
     <script>
-      var downloadable = null
       var csvEditor = CodeMirror.fromTextArea(document.getElementById('csv-editor'), {
         indentWithTabs: true,
         mode: 'mathematica',
@@ -222,7 +184,6 @@
         lineWrapping: true,
       })
       csvEditor.setSize(null,250)
-
       function csvPreview() {
         let csvContent = "data:text/csv;charset=utf-8,";
         let preview = ''
@@ -233,26 +194,6 @@
         });
         downloadable = csvContent
         csvEditor.setValue(preview)
-      }
-
-      function download() {
-        try {
-          csv = downloadable
-          if (csv === null)
-            throw 'no stupid csv file'
-          var element = document.createElement('a');
-          element.setAttribute('href', csv);
-          element.setAttribute('download', 'data.csv');
-
-          element.style.display = 'none';
-          document.body.appendChild(element);
-
-          element.click();
-
-          document.body.removeChild(element);
-        } catch (err) {
-          alert('Download failed')
-        }
       }
     </script>
     <div class='centered-content small'>

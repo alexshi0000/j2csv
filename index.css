@@ -26,10 +26,10 @@ body {margin: 0px; padding: 0px}
 	-ms-overflow-style: none;
 }
 .shrink {
-	transform: scale(1.05);
+	transform: scale(1.00);
 }
 .expand {
-	transform: scale(0.85);
+	transform: scale(0.80);
 }
 .footer {
 	font-family: 'Montserrat', sans-serif;
@@ -50,8 +50,8 @@ body {margin: 0px; padding: 0px}
 	padding: 5px;
 }
 .small {
-	width: 53%;
-	margin-left: 23.5%;
+	width: 54%;
+	margin-left: 23%;
 }
 .large {
 	width: 82%;

@@ -1,8 +1,7 @@
-function flatten (obj, prefix, current) { //TODO use lodash here
+function flatten (obj, prefix, current) {
 	prefix = prefix || []
 	current = current || {}
-
-	// Remember kids, null is also an object!
+	// null is an object
 	if (typeof (obj) === 'object' && obj !== null) {
 		Object.keys(obj).forEach(key => {
 			this.flatten(obj[key], prefix.concat(key), current)
@@ -10,7 +9,6 @@ function flatten (obj, prefix, current) { //TODO use lodash here
 	} else {
 		current[prefix.join('_')] = obj
 	}
-
 	return current
 }
 

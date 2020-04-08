@@ -9,6 +9,7 @@ var currentPreviewState = null
 
 const success = 'success'
 const failed = 'failed'
+const suppress = true
 
 initSqlJs(config).then(function(SQL){
 	db = new SQL.Database();
@@ -32,11 +33,15 @@ function generateSQLlist(list) {
 }
 
 function log(msg) {
-	console.log('%c' + msg, 'color: #0ff')
+	if (!suppress) {
+		console.log('%c' + msg, 'color: #0ff')
+	}
 }
 
 function warn(msg) {
-	console.log('%c' + msg, 'color: #fa0')
+	if (!suppress) {
+		console.log('%c' + msg, 'color: #fa0')
+	}
 }
 
 function tableCreate(tableName, columns) {
