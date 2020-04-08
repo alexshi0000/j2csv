@@ -1,0 +1,141 @@
+body {margin: 0px; padding: 0px}
+#plug {
+	text-decoration: none;
+	color: #88f;
+}
+#plug:hover {
+	color: #44f;
+}
+#sizeChanger {
+	height: 30px;
+	width: auto;
+	position: sticky;
+	position: -webkit-sticky;
+	float: right;
+	top: 40px;
+	margin-right: 40px;
+	transition: transform .2s;
+	cursor: pointer;
+}
+.disable-scrollbars::-webkit-scrollbar {
+	width: 0px;
+	background: transparent;
+}
+.disable-scrollbars {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+.shrink {
+	transform: scale(1.05);
+}
+.expand {
+	transform: scale(0.85);
+}
+.footer {
+	font-family: 'Montserrat', sans-serif;
+	font-size: 15px;
+	margin: 0px;
+	margin-top: 80px;
+	padding: 16px;
+	text-align: center;
+}
+.scrollable {
+	max-height: 520px;
+	overflow: auto;
+}
+.CodeMirror {
+	height: 470px;
+}
+.separator {
+	padding: 5px;
+}
+.small {
+	width: 53%;
+	margin-left: 23.5%;
+}
+.large {
+	width: 82%;
+	margin-left: 9%;
+}
+.code-container {
+	transition: width .5s, margin-left .5s;
+	font-size: 17px;
+	border: 1px solid black;
+	font-family: 'Inconsolata', monospace;
+	padding: 1px;
+	border-radius: 4px;
+}
+.gray {
+	color: #88f;
+}
+.centered-content {
+	transition: width .5s, margin-left .5s;
+}
+.title {
+	padding-top: 12px;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 600;
+	font-size: 32px;
+}
+.subtitle {
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 600;
+	font-size: 20px;
+}
+.para {
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 400;
+	font-size: 18px;
+	margin-top: -4px;
+	margin-bottom: 16px;
+	line-height: 155%;
+}
+.tiny {
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 70%;
+}
+.button {
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 500;
+	border: none;
+	background-color: inherit;
+	margin-top: 12px;
+	padding: 0px;
+	font-size: 18px;
+	cursor: pointer;
+	display: inline-block;
+	color: #666;
+	outline: none;
+	float: right;
+}
+.button:hover {
+	color: #000;
+}
+.pill {
+	background-color: #ddd;
+	border: none;
+	color: black;
+	padding: 15px 22px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	margin-bottom: 12px;
+	margin-right: 4px;
+	border-radius: 2px;
+	cursor: pointer;
+}
+table, td {
+	border: 1px solid black;
+	padding: 6px 16px;
+	border-collapse: collapse;
+	font-family: 'Inconsolata', monospace;
+	font-size: 18px;
+}
+th {
+	padding: 8px 16px;
+	border: 1px solid black;
+	background-color: #eee;
+}
+
