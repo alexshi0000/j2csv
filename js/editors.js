@@ -26,4 +26,5 @@ if (isSmallState) {
 		})
 	})
 }
+}
 isSmallState = !isSmallState
