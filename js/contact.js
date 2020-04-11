@@ -16,8 +16,8 @@ function send() {
 	} else {
 		try {
 			const Http = new XMLHttpRequest()
-			const url = 'https://protected-lake-99960.herokuapp.com/add?email=' +
-				    email + '&message=' + description
+			const url = 'https://protected-lake-99960.herokuapp.com/add?&email='
+				        + email + '&message=' + description + '&incoming=j2csv'
 			Http.open('POST', url)
 			Http.send()
 		} catch (err) {
