@@ -4,7 +4,17 @@ body {margin: 0px; padding: 0px}
 	color: #88f;
 }
 #plug:hover {
-	color: #44f;
+	color: #54d;
+}
+#github {
+	margin-top: 15px;
+	font-size: 18px;
+	float: right;
+	text-decoration: none;
+	color: #999;
+}
+#github:hover {
+	color: #666;
 }
 #sizeChanger {
 	height: 30px;
@@ -33,7 +43,8 @@ body {margin: 0px; padding: 0px}
 }
 .footer {
 	font-family: 'Montserrat', sans-serif;
-	font-size: 15px;
+	font-size: 16px;
+	font-weight: 400;
 	margin: 0px;
 	margin-top: 80px;
 	padding: 16px;
@@ -72,7 +83,7 @@ body {margin: 0px; padding: 0px}
 	transition: width .5s, margin-left .5s;
 }
 .title {
-	padding-top: 12px;
+	padding-top: 15px;
 	font-family: 'Montserrat', sans-serif;
 	font-weight: 600;
 	font-size: 32px;
@@ -138,4 +149,13 @@ th {
 	border: 1px solid black;
 	background-color: #eee;
 }
-
+/* MOBILE */
+@media only screen and (max-width: 500px) {
+	#sizeChanger {
+		display: none;
+	}
+	.small {
+		width: 90%;
+		margin-left: 5%;
+	}
+}
