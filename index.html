@@ -25,6 +25,7 @@
     <!-- STYLL -->
     <link href="./index.css" rel='stylesheet'>
     <!-- JS -->
+    <script src='./js/convert-xml.js'></script>
     <script src='./js/db-func.js'></script>
     <script src='./js/data-loader.js'></script>
     <script src='./js/test.js'></script>
@@ -80,6 +81,23 @@
         }
         return success
       }
+      function load_xml() {
+        try {
+          var xmlCode = jsonEditor.getValue()
+          console.log(xmlCode)
+          parser = new DOMParser()
+          var xml = parser.parseFromString(xmlCode,"text/xml");
+          var parsedXML = xmlToJson(xml)
+          console.log(parsedXML)
+          var pretty = JSON.stringify(parsedXML, undefined, 2)
+          jsonEditor.setValue(pretty.replace(/[#@]/g), 'unknownchar') //add any unwanted characters here
+          load()
+        } catch (err) {
+          console.log(err)
+          alert('XML is not valid')
+        }
+        return success
+      }
       function load_sample() {
         fetch('preload.json')
           .then(res => res.json())
@@ -87,7 +105,8 @@
       }
     </script>
     <div class='centered-content small'>
-      <button type='button' class='button' onclick='load()'>validate and load json </button>
+      <button type='button' class='button' onclick='load()'>&nbsp&nbsp&nbspload json</button>
+      <button type='button' class='button' onclick='load_xml()'>load xml</button>
       <div class='separator'></div>
       <div class='separator'></div>
 
