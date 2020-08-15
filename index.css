@@ -26,6 +26,10 @@ body {margin: 0px; padding: 0px}
 	margin-right: 40px;
 	transition: transform .2s;
 	cursor: pointer;
+	opacity: 0.6;
+}
+#sizeChanger:hover {
+	opacity: 0.9;
 }
 .disable-scrollbars::-webkit-scrollbar {
 	width: 0px;
@@ -134,8 +138,15 @@ body {margin: 0px; padding: 0px}
 	display: inline-block;
 	margin-bottom: 12px;
 	margin-right: 4px;
-	border-radius: 2px;
+	border-radius: 5px;
 	cursor: pointer;
+	-webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  user-select: none;
+}
+.pill:hover {
+	background-color: #ccc;
 }
 table, td {
 	border: 1px solid black;
